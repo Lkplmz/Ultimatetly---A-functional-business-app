@@ -1,0 +1,15 @@
+Frontend/
+node_modules/
+
+# Keep environment variables out of version control
+.env
+
+*.txt
+*.http
+
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+
+src/generated/

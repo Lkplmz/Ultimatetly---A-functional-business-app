@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+
+model BusinessConfig {
+  id                String   @id @default("SETTINGS")
+  businessName      String
+  contactEmail      String
+  
+  // JSON para flexibilidad (Ej: { "mon": { "open": "09:00", "close": "18:00" } })
+  operatingHours    Json
+  
+  // Métricas: Campos específicos para tipos exactos
+  totalRevenue      Decimal  @default(0) @db.Decimal(10, 2)
+  currency          String   @default("USD")
+
+  // Asegura que no se puedan crear otros registros
+  @@map("BusinessConfig")
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+enum UserRole {
+  ADMIN
+  USER
+}
+
+model Booking {
+  id Int @id @default(autoincrement())
+
+  name String
+  email String
+  
+  Service Service @relation(fields: [service_id], references: [id])
+  service_id Int
+
+  date DateTime @unique
+  status BookingStatus @default(PENDING)
+}
+
+model Service {
+  id Int @id @default(autoincrement())
+  name String @unique
+  price Float
+  active Boolean
+  description String
+  Booking Booking[]
+}
+
+model User {
+  id Int @id @default(autoincrement())
+  username String
+  email String @unique
+  password String
+  role UserRole @default(USER)
+  loggedIn Boolean
+}
